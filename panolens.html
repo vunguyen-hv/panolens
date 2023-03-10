@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      #viewer {
+        width: 100%;
+        height: 100%;
+      }
+
+      #new_infospot2 {
+        max-width: 500px;
+        max-height: 500px;
+        min-width: 200px;
+        min-height: 250px;
+        background: #fff;
+        color: #000;
+        border-radius: 3px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="viewer"></div>
+
+    <div id="new_infospot2" class="infospot" style="display: none">
+      <div class="title">China's Forgotten War</div>
+      <div class="text">
+        WWII came to the small town of Tai’erzhuang in central China – and it
+        was never the same again. The town was strategically placed, on the
+        north-south transport railway corridor and the ancient Grand Canal, and
+        so was a focus of the Japanese Imperial army as it advanced. Li Jing
+        Shan was only a child when his family fled the fighting. They returned
+        to find their home, and most of the town, in ruins.
+      </div>
+    </div>
+  </body>
+  <script src="https://pchen66.github.io/js/three/three.min.js"></script>
+  <script src="https://rawgit.com/pchen66/panolens.js/dev/build/panolens.min.js"></script>
+  <script>
+    const viewer = new PANOLENS.Viewer({
+      container: document.querySelector("#viewer"),
+      autoRotate: true,
+      autoRotateSpeed: 1,
+      initialLookAt: new THREE.Vector3(3000, 500, -2000),
+    });
+
+    // Add audio to website
+    // const audioSphere = new THREE.Mesh(
+    //   new THREE.SphereGeometry(50, 16, 16),
+    //   new THREE.MeshBasicMaterial({
+    //     color: 0xffff00,
+    //     //shading: THREE.FlatShading
+    //   })
+    // );
+    // audioSphere.position.set(0, 0, -36.171200427729595);
+
+    // let listener = new THREE.AudioListener();
+    // viewer.getCamera().add(listener);
+
+    // let audioLoader = new THREE.AudioLoader();
+    // let sound = new THREE.PositionalAudio(listener);
+    // audioLoader.load(
+    //     "https://threejs.org/examples/sounds/358232_j_s_song.mp3",
+    //     function (buffer) {
+    //       audioBuffer = buffer;
+    //       sound.setBuffer(buffer);
+    //       sound.setRefDistance(100);
+    //       sound.setLoop(true);
+    //       sound.play();
+    //     }
+    //   );
+    //   audioLoader.stop()
+    // audioSphere.add(sound);
+
+    viewer.setCameraFov(60);
+    // viewer.reverseDraggingDirection();
+    // viewer.getControl().rotateSpeed *= 2;
+
+    let panorama = new PANOLENS.ImagePanorama(
+      "https://images.unsplash.com/photo-1552288092-76e7d732366c"
+    );
+    // panorama.add(audioSphere);
+    viewer.add(panorama);
+
+    let new_panorama = new PANOLENS.ImagePanorama(
+      "https://images.unsplash.com/photo-1509225770129-fbcf8a696c0b"
+    );
+    let new_infospot1 = new PANOLENS.Infospot(100, PANOLENS.DataImage.Info);
+    new_infospot1.position.set(0, 2000, -2000);
+    new_infospot1.addEventListener("click", function () {
+      new_infospot1.position.set(4000, 0, -2000);
+      alert("hello");
+    });
+    panorama.add(new_infospot1);
+    let new_infospot2 = new PANOLENS.Infospot(100, PANOLENS.DataImage.Info);
+    new_infospot2.position.set(1000, 0, -100);
+    new_infospot2.addHoverElement(
+      document.querySelector("#new_infospot2"),
+      200
+    );
+    new_panorama.addEventListener("leave", function () {
+      document.querySelectorAll(".infospot").forEach(function (infospot) {
+        infospot.style.display = "none";
+      });
+    });
+    new_panorama.add(new_infospot2);
+    viewer.add(new_panorama);
+
+    panorama.link(
+      new_panorama,
+      new THREE.Vector3(200, -800, -2000),
+      200
+      //   "https://images.unsplash.com/photo-1509225770129-fbcf8a696c0b"
+    );
+    new_panorama.link(panorama, new THREE.Vector3(0, 0, -2000));
+
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    )
+      viewer.enableControl(PANOLENS.CONTROLS.DEVICEORIENTATION);
+  </script>
+</html>
